@@ -1,0 +1,136 @@
+php artisan storage:link
+
+## Create Middleware for protecting pages
+
+php artisan make:middleware RoleMiddleware
+
+App/Http/Middleware/RoleMiddleware.php ---> location
+
+public function handle(Request $request, Closure $next, ...$roles): Response
+{
+if(!Auth::check() || !in_array(Auth::user()->role, $roles)) {
+        return response()->view('errors.unauthorized');
+    }
+    return $next($request);
+}
+
+web.php
+use App\Http\Middleware\RoleMiddleware;
+
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+Route::get('admin/users', [TestController::class, 'admin'])->name('admin.users');
+});
+Route::middleware(['auth', 'verified', 'role:superadmin'])->group(function () {
+Route::get('superadmin/system', [TestController::class, 'superadmin'])->name('superadmin.system');
+});
+
+php artisan optimize
+
+## Register the middleware
+
+Register the middleware in bootstrap/app.php
+
+use App\Http\Middleware\RoleMiddleware;
+
+$middleware->alias([
+'role' => RoleMiddleware::class,
+]);
+
+resouces/views/errors/unauthorized.blade.php
+search for: 403 unauthorized html css code
+
+## Notification
+add it in http/middleware/HandleInertiaRequest.php
+'flash' => [
+    'message' => fn () => $request->session()->get('message')
+],
+
+Install shadcn soonner
+Add <Toaster /> to resources/js/layouts/app-layout.tsx
+
+{children}
+<Toaster position='top-right' richColors />
+
+index.tsx
+const { flash } = usePage<{ flash: { message?: string } }>().props;
+
+useEffect(() => {
+  if(flash.message){
+    toast.success(flash.message);
+  }
+}, [flash.message]);
+
+create.tsx
+post('/posts', {
+            onSuccess: () => {
+                toast.success('Product has been created.');
+                reset();
+            },
+            // onError: () => {
+            //     toast.error('Posts has not been created.');
+            // },
+        });
+
+This worked for me, hope it helps
+Restart the server
+npm run build
+npm run dev
+php artisan serve
+
+## resources/j/components/app-sidebar.tsx
+
+export function AppSidebar() {
+    const { auth } = usePage().props;
+    const userRole = auth?.user?.role || 'user';
+
+    const mainNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+            icon: LayoutGrid,
+        },
+        // {
+        //     title: 'Manage Posts',
+        //     href: '/posts',
+        //     icon: Briefcase,
+        // },
+    ];
+
+    const adminNavItems: NavItem[] = [
+        {
+            title: 'Manage Posts',
+            href: '/posts',
+            icon: Briefcase,
+        },
+    ];
+    const superAdminNavItems: NavItem[] = [
+        {
+            title: 'Manage Posts',
+            href: '/posts',
+            icon: Briefcase,
+        },
+        // {
+        //     title: 'System Controls',
+        //     href: '/superadmin/system',
+        //     icon: Shield,
+        // },
+    ];
+
+    let roleBasedNavItems = [...mainNavItems];
+    if (userRole === 'admin') {
+        roleBasedNavItems = [...roleBasedNavItems, ...adminNavItems];
+    }
+    if (userRole === 'superadmin') {
+        roleBasedNavItems = [...roleBasedNavItems, ...adminNavItems, ...superAdminNavItems];
+    }
+
+
+    return (
+        <SidebarContent>
+                <NavMain items={roleBasedNavItems} />
+                ----
+    )
+
+    ## Instal lodash
+    npm i lodash
+    npm i --save-dev @types/lodash
