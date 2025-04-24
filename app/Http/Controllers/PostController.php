@@ -22,7 +22,7 @@ class PostController extends Controller
         if($request->has('search') && $request->search !== null) {
             $query->whereAny(['title', 'content'], 'like', '%' . $request->search . '%');
         }
-        $posts = $query->paginate(10)->toArray();
+        $posts = $query->paginate(4)->toArray();
         // dd($posts);
         return Inertia::render('posts/index', [
             'posts' => $posts,

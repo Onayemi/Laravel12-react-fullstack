@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
@@ -27,6 +27,25 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         password: '',
         remember: false,
     });
+
+    const githubRoute = `/auth/github/redirect`;
+    // const handleGithubLogin = async () => {
+    //     // try {
+    //     //     const response = await axios.get('auth.redirect'); // Replace with your actual API endpoint
+    //     //     console.log(response);
+    //     //     // // Assuming your API returns a JSON response with a 'redirect_url'
+    //     //     // if (response.data && response.data.redirect_url) {
+    //     //     //     window.location.href = response.data.redirect_url;
+    //     //     // } else if (typeof response.data === 'string' && response.data.startsWith('http')) {
+    //     //     //     window.location.href = response.data;
+    //     //     // } else {
+    //     //     //     console.error('Invalid redirect URL received:', response.data);
+    //     //     // }
+    //     // } catch (error) {
+    //     //     console.error('There was an error:', error);
+    //     //     // Handle the error
+    //     // }
+    // };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -105,6 +124,22 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             </form>
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+
+            <div className="text-muted-foreground space-x-2 text-center text-sm">
+                <Link href={githubRoute}>Login with Github</Link>
+                {/* <Button asChild size={'sm'} variant={'default'}>
+                    <Link href={githubRoute} prefetch>
+                        Login with Github
+                    </Link>
+                </Button> */}
+                {/* <button onClick={handleGithubLogin}>Login with Github</button> */}
+                {/* <Link href={route('auth.redirect', 'github')} tabIndex={6}>
+                    Login with Github
+                </Link>
+                <Link href={route('auth.redirect', 'google')} tabIndex={7}>
+                    Login with Google
+                </Link> */}
+            </div>
         </AuthLayout>
     );
 }
