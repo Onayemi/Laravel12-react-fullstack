@@ -11,7 +11,8 @@ use Laravel\Socialite\Facades\Socialite;
 
 class ProviderController extends Controller
 {
-    public function providerRedirect(string $provider) {
+    // public function providerRedirect(string $provider) {
+    public function providerRedirect($provider) {
         if(!in_array($provider, ['github','google'])){
             return redirect(route('login'))->withErrors('provider', 'Invalid Provider');
          }
@@ -23,7 +24,7 @@ class ProviderController extends Controller
          }
     }
 
-    public function providerCallback(string $provider) {
+    public function providerCallback($provider) {
 
         if(!in_array($provider, ['github','google'])){
             return redirect(route('login'))->withErrors('provider', 'Invalid Provider');

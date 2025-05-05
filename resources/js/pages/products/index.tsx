@@ -63,7 +63,7 @@ export default function Products({ products }: { products: ProductsType }) {
                             </div>
                         </div>
                         <Button asChild>
-                            <Link href="/posts/create" prefetch>
+                            <Link href="/products/create" prefetch>
                                 Create Product
                             </Link>
                         </Button>

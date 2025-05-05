@@ -50,7 +50,8 @@ class PostController extends Controller
             'content' => 'required|string|max:1000',
             'status' => 'required',
             'category' => 'required|string|max:225',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            // 'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
         
         $file = $request->file('image');
