@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->string('reference')->unique();
             $table->decimal('amount', 10, 2);
+            // $table->enum('status', ['pending', 'success', 'failed']);
             $table->string('status');
             $table->string('gateway_response');
             $table->string('ip_address');

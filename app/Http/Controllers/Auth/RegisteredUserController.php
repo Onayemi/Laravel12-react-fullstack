@@ -42,6 +42,11 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $user->nairaWallet()->create([
+            'currency_type_id' => 1,
+            
+        ]);
+
         event(new Registered($user));
 
         Auth::login($user);

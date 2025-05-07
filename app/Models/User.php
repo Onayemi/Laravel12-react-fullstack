@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Post;
 use App\Models\Product;
+use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -59,5 +60,14 @@ class User extends Authenticatable
     }
     public function products() {
         return $this->hasMany(Product::class);
+    }
+
+    public function nairaWallet()
+    {
+        return $this->hasOne(Wallet::class)->where('currency_type_id', 1);
+    }
+    public function coinWallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class)->where('currency_type_id', 2);
     }
 }

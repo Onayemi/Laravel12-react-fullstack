@@ -90,6 +90,24 @@ class PaymentController extends Controller
             $ip = $request->ip();
         
             $paymentDetails = $body['data'];
+
+            // $reference = $paymentDetails['reference'];
+            // $transaction =  Transaction::where('reference', $reference)->first();
+            // $transaction_user = Uer::find($transaction->user_id);
+            // $user_wallet = Wallet::find($transaction->wallet_id);
+
+            // if($transaction->status == 'failed'){
+            //     return back()->with(['error' => 'Failed transaction, please try again']);
+            // }
+            // if($transaction->status == 'successful'){
+            //     return back()->with(['error' => 'Transaction already processed ']);
+            // }
+            
+            // // Add Wallet and remove the charges
+            // $user_wallet->balance += $transaction->amount;
+            // $user_wallet->save();
+            // return back()->with(['message' => 'Payment made successfully']);
+
             $position = Location::get($paymentDetails['ip_address']);
             // dd($body, "ip", $position);
             if ($paymentDetails['status'] && $paymentDetails['status'] == 'success') {
