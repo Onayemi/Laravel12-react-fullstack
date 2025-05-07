@@ -5,8 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { PencilIcon, Search, Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,6 +49,14 @@ const formatCurrency = (number: number, symbol = '₦') => {
 };
 
 export default function Products({ products }: { products: ProductsType }) {
+    const { flash } = usePage<{ flash: { message?: string } }>().props;
+
+    useEffect(() => {
+        if (flash.message) {
+            toast.success(flash.message);
+        }
+    }, [flash.message]);
+
     const deletePost = (id: number) => {
         alert(id);
     };

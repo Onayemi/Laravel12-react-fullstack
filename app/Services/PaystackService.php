@@ -6,72 +6,69 @@ use Illuminate\Support\Facades\Http;
 
 class PaystackService 
 {
-    // protected $client;
-    protected $secretKey;
-    protected $baseUrl;
+    protected $paystack;
 
-    public function __constructor()
+    public function __constructor(PaystackService $paystack)
     {
-        // $this->client = new Client([
-        //     'base_url' => 'https://api.paystack.co',
-        //     'headers' => [
-        //         'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
-        //         'Content-Type' => 'application/json',
-        //     ],
-        //     'verify' => true // Add this line to disable SSL verification
-        // ]);
-        $client = new Client([
-            'base_uri' => config('services.paystack.base_url'),
-            'headers' => [
-                'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
-                'Accept' => 'application/json',
-            ]
-        ]);
-
-        // $this->secretKey = config('services.paystack.secret_key');
-
-        // $this->secretKey = config('services.paystack.secret_key');
-        // $this->baseUrl = config('services.paystack.base_url');
-
-        // $this->baseUrl = config('services.paystack.base_url', 'https://api.paystack.co');
-        // $this->secretKey = config('services.paystack.secret');
+        $this->paystack = $paystack;
     }
 
-    public function initializeTransaction(array $data) {
-        $response = $client->post('/transaction/initialize', [
-            'json' => $data
-        ]);
-        return json_decode($response->getBody(), true);
-        // $response = $client->post('/transaction/initialize', [
-        //     'json' => [
-        //         'email' => auth()->user()->email,
-        //         'amount' => $request->amount * 100, // in kobo
-        //     ]
-        // ]);
-        
-        // $data = json_decode($response->getBody(), true);
+    public function initializeTransaction(Request $request, $paystackUrl) {
+        $client = new Client();
+        try {
+            $response = $client->request('POST', $paystackUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
+                    'Content-Type'  => 'application/json',
+                    'Accept'        => 'application/json',
+                ],
+                'json' => [
+                    'email'  => auth()->user()->email,
+                    'phone'  => '08061313253',
+                    'amount' => $request->amount * 100, // amount in kobo
+                    'callback_url' => route('payment.callback'), // ✅ This is the callback
+                ],
+            ]);
 
-        // return Http::withToken($this->secretKey)
-        //            ->post("{$this->baseUrl}/transaction/initialize", $data)
-        //            ->json();
+            $body = json_decode($response->getBody()->getContents(), true);
+            $callback_url = $body['data']['authorization_url'];
+            if (!empty($callback_url)) {
+                return Inertia::location($callback_url);                                                   
+                exit;
+            }
 
-        // $response = Http::withToken($this->secretKey)
-        //     ->post("{$this->baseUrl}/transaction/initialize", $data);
-
-        // return $response->json();
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'response' => json_decode($e->getResponse()->getBody()->getContents(), true),
+            ]);
+        }
     }
 
-    public function verifyTransaction(string $reference){
-        $response = $client->get("/transaction/verify/{$reference}");
-        return json_decode($response->getBody(), true);
-        
-        // return Http::withToken($this->secretKey)
-        //            ->get("{$this->baseUrl}/transaction/verify/{$reference}")
-        //            ->json();
-        // $response = Http::withToken($this->secretKey)
-        //     ->get("{$this->baseUrl}/transaction/verify/{$reference}");
+    public function verifyTransaction(Request $request, $paystackUrl){
+        $reference = $request->query('reference');
+        $client = new \GuzzleHttp\Client();
 
-        // return $response->json();
+        try {
+            // https://api.paystack.co/transaction/verify
+            $response = $client->request('GET', "{$paystackUrl}/{$reference}", [
+                'verify' => true, // disable SSL validation (for local dev)
+                'headers' => [
+                    'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
+                    'Accept'        => 'application/json',
+                ],
+            ]);
+            $body = json_decode($response->getBody(), true);
+            dd($body);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'response' => json_decode($e->getResponse()->getBody()->getContents(), true),
+            ]);
+        }
+            $body = json_decode($response->getBody(), true);
     }
 
 }

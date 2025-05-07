@@ -15,7 +15,7 @@ class ProductController extends Controller
 
     public function __constructor(PaystackService $paystack)
     {
-        $his->paystack = $paystack;
+        $this->paystack = $paystack;
     }
     /**
      * Display a listing of the resource.
@@ -61,6 +61,9 @@ class ProductController extends Controller
         ];
 
         $response = $this->paystack->initializeTransaction($data);
+        // $url = 'https://api.paystack.co/transaction/initialize';
+        // $dd = $this->paystack->initializeTransaction($email, $url);
+
         return redirect($response['data']['authorization_url']);
     }
 
