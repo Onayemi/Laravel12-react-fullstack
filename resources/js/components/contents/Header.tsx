@@ -13,7 +13,10 @@ export default function Header() {
             </Link>
 
             <div className="mr-2 hidden gap-4 md:flex">
-                <Link href="/table" className="mt-2">
+                <Link href="/" className="mt-2 font-bold">
+                    Home
+                </Link>
+                <Link href="/table" className="mt-2 font-bold">
                     Table Page
                 </Link>
                 <Button className="mb-2" asChild>

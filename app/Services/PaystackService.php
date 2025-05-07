@@ -20,29 +20,58 @@ class PaystackService
         //     ],
         //     'verify' => true // Add this line to disable SSL verification
         // ]);
+        $client = new Client([
+            'base_uri' => config('services.paystack.base_url'),
+            'headers' => [
+                'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
+                'Accept' => 'application/json',
+            ]
+        ]);
+
         // $this->secretKey = config('services.paystack.secret_key');
-        $this->secretKey = config('services.paystack.secret_key');
-        $this->baseUrl = config('services.paystack.base_url');
+
+        // $this->secretKey = config('services.paystack.secret_key');
+        // $this->baseUrl = config('services.paystack.base_url');
+
+        // $this->baseUrl = config('services.paystack.base_url', 'https://api.paystack.co');
+        // $this->secretKey = config('services.paystack.secret');
     }
 
     public function initializeTransaction(array $data) {
-        // $response = $this->client->post('/transaction/initialize', [
-        //     'json' => $data
+        $response = $client->post('/transaction/initialize', [
+            'json' => $data
+        ]);
+        return json_decode($response->getBody(), true);
+        // $response = $client->post('/transaction/initialize', [
+        //     'json' => [
+        //         'email' => auth()->user()->email,
+        //         'amount' => $request->amount * 100, // in kobo
+        //     ]
         // ]);
-        // return json_decode($response->getBody(), true);
-        $response = Http::withToken($this->secretKey)
-            ->post("{$this->baseUrl}/transaction/initialize", $data);
+        
+        // $data = json_decode($response->getBody(), true);
 
-        return $response->json();
+        // return Http::withToken($this->secretKey)
+        //            ->post("{$this->baseUrl}/transaction/initialize", $data)
+        //            ->json();
+
+        // $response = Http::withToken($this->secretKey)
+        //     ->post("{$this->baseUrl}/transaction/initialize", $data);
+
+        // return $response->json();
     }
 
     public function verifyTransaction(string $reference){
-        // $response = $this->client->get("/transaction/verify/{$reference}");
-        // return json_decode($response->getBody(), true);
-        $response = Http::withToken($this->secretKey)
-            ->get("{$this->baseUrl}/transaction/verify/{$reference}");
+        $response = $client->get("/transaction/verify/{$reference}");
+        return json_decode($response->getBody(), true);
+        
+        // return Http::withToken($this->secretKey)
+        //            ->get("{$this->baseUrl}/transaction/verify/{$reference}")
+        //            ->json();
+        // $response = Http::withToken($this->secretKey)
+        //     ->get("{$this->baseUrl}/transaction/verify/{$reference}");
 
-        return $response->json();
+        // return $response->json();
     }
 
 }

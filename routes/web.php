@@ -29,10 +29,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::resource('posts', PostController::class);
 
     // Add form page before payment
-    // Route::post('/pay', [ProductController::class, 'initialize'])->name('payment.initialize');
-    // Route::get('/payment/callback', [ProductController::class, 'callback'])->name('payment.callback');
-    Route::post('/pay', [PaymentController::class, 'initialize'])->name('payment.initialize');
-    Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+    // Route::post('/pay', [PaymentController::class, 'initialize'])->name('payment.initialize');
+    // Route::post('/test/pay', [PaymentController::class, 'testPaystack'])->name('payment.testPaystack');
+    // Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 });
 
 Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function () {
@@ -40,6 +39,9 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::resource('products', ProductController::class);
     // Route::post('/pay', [ProductController::class, 'initialize'])->name('payment.initialize');
     // Route::get('/payment/callback', [ProductController::class, 'callback'])->name('payment.callback');
+    Route::post('/pay', [PaymentController::class, 'initialize'])->name('payment.initialize');
+    Route::post('/test/pay', [PaymentController::class, 'testPaystack'])->name('payment.testPaystack');
+    Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 });
 Route::middleware(['auth', 'verified', 'role:superadmin'])->group(function () {
     Route::resource('products', ProductController::class);

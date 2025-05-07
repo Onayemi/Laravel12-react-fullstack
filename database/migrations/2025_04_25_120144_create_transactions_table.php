@@ -19,6 +19,10 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('status');
             $table->string('gateway_response');
+            $table->string('ip_address');
+            $table->string('country_name');
+            $table->string('country_code');
+            $table->string('timezone');
             $table->timestamps();
         });
     }

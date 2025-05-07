@@ -134,3 +134,9 @@ export function AppSidebar() {
     ## Instal lodash
     npm i lodash
     npm i --save-dev @types/lodash
+
+    <!-- How toget location with ip address in laravel -->
+    https://github.com/stevebauman/location
+
+    composer require stevebauman/location
+   

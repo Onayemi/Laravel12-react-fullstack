@@ -35,30 +35,22 @@ export default function CreateProduct() {
         image: null,
     });
 
+    // const { url } = usePage().props;
+
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post('/pay', {
             // route('payment.initialize')
             onSuccess: () => {
+                // router.replace(url)
                 toast.success('Products has been created.');
                 reset();
-                // window.location.href = response.data.data.authorization_url;
             },
             // onError: () => {
             //     toast.error('Posts has not been created.');
             // },
         });
     };
-
-    // const handlePay = async () => {
-    //     try {
-    //       const res = await axios.post('/paystack/initialize', { email, amount });
-    //       window.location.href = res.data.data.authorization_url;
-    //     } catch (err) {
-    //       alert("Payment initialization failed.");
-    //       console.error(err);
-    //     }
-    //   };
 
     // File Handling
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

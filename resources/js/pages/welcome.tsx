@@ -8,9 +8,13 @@ export default function Welcome() {
 
     return (
         <>
-            <Head title="Welcome">
+            <Head>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+                <title>Welcome</title>
+                <meta name="description" content="Free Web tutorials" />
+                <meta name="keywords" content="HTML, CSS, JavaScript" />
+                <meta name="author" content="John Doe" />
             </Head>
             <HeaderProvider>
                 <Demo />
