@@ -42,6 +42,7 @@ class PaymentController extends Controller
                         'phone'  => '08061313253',
                         'title' => $request->title,
                         'category' => $request->category,
+                        'content' => $request->content,
                     ],
                     'callback_url' => route('payment.callback'), // ✅ This is the callback
                 ],
