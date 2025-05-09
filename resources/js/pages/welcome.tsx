@@ -1,6 +1,6 @@
 import HeaderProvider from '@/components/contents/HeaderProvider';
 import { Hero } from '@/components/Hero';
-import { Hero2 } from '@/components/Hero2';
+import { HeroMain } from '@/components/HeroMain';
 import { Pricing } from '@/components/Price';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
@@ -20,7 +20,7 @@ export default function Welcome() {
                 <meta name="author" content="John Doe" />
             </Head>
             <HeaderProvider>
-                <Hero2 />
+                <HeroMain />
                 <Hero />
                 <Demo />
                 <Pricing />

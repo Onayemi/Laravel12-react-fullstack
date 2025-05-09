@@ -6,7 +6,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 
 export default function Header() {
     return (
-        <div className="sticky top-0 flex items-center justify-between border bg-white px-5 py-2 dark:bg-gray-800">
+        // z-50
+        <div className="sticky top-0 z-50 flex items-center justify-between border bg-white px-5 py-2 dark:bg-gray-800">
             <Link href="/" className="flex items-center gap-2">
                 <Container className="h-8 w-8" />
                 <span className="text-lg font-semibold">Remlex Tech</span>
