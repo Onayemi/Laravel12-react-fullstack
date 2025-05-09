@@ -18,7 +18,7 @@ export default function TableDemo() {
                         <TabsList className="grid grid-cols-5 gap-3 bg-gray-400 lg:w-[550px]">
                             <TabsTrigger value="account">Account</TabsTrigger>
                             <TabsTrigger value="password">Password</TabsTrigger>
-                            <TabsTrigger value="faq">FAQ & QrCode</TabsTrigger>
+                            <TabsTrigger value="faq">QrCode</TabsTrigger>
                             <TabsTrigger value="table">Table</TabsTrigger>
                             <TabsTrigger value="banner">Banner</TabsTrigger>
                         </TabsList>
