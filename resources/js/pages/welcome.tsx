@@ -1,4 +1,7 @@
 import HeaderProvider from '@/components/contents/HeaderProvider';
+import { Hero } from '@/components/Hero';
+import { Hero2 } from '@/components/Hero2';
+import { Pricing } from '@/components/Price';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import Demo from './demo';
@@ -17,7 +20,10 @@ export default function Welcome() {
                 <meta name="author" content="John Doe" />
             </Head>
             <HeaderProvider>
+                <Hero2 />
+                <Hero />
                 <Demo />
+                <Pricing />
             </HeaderProvider>
             {/* <Header /> */}
             {/* <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">

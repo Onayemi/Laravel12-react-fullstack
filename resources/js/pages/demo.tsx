@@ -7,7 +7,7 @@ import { MailPlus } from 'lucide-react';
 
 export default function Demo() {
     return (
-        <div className="min-h-screen px-5">
+        <div className="min-h-screen bg-gray-100 px-5 pt-10">
             <Card className="mx-auto my-5 w-full max-w-lg shadow-lg">
                 <CardHeader>
                     <CardTitle>Register</CardTitle>
