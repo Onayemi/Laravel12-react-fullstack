@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Transaction;
 use App\Services\PaystackService;
 use GuzzleHttp\Client;
@@ -9,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Stevebauman\Location\Facades\Location;
 
@@ -32,16 +34,31 @@ class PaymentController extends Controller
                     'Accept'        => 'application/json',
                 ],
                 'json' => [
-                    'first_name' => auth()->user()->name,
-                    'last_name' => auth()->user()->name,
                     'email'  => auth()->user()->email,
-                    'phone'  => '08061313253',
                     'amount' => $request->amount * 100, // amount in kobo
+                    'metadata' => [
+                        'first_name' => auth()->user()->name,
+                        'last_name' => auth()->user()->name,
+                        'phone'  => '08061313253',
+                        'title' => $request->title,
+                        'category' => $request->category,
+                    ],
                     'callback_url' => route('payment.callback'), // ✅ This is the callback
                 ],
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
+            // dd($body);
+            $addProduct = Product::create([
+                'user_id' => auth()->user()->id,
+                'prod_name' => $request->title,
+                'slug' => Str::slug($request->title),
+                'category' => $request->category,
+                'status' => $request->status,
+                'price' => $request->amount,
+                'description' => $request->content,
+            ]);
+
             $url = $body['data']['authorization_url'];
             if (!empty($url)) {
                 // echo "<script>window.location.href = '{$url}';</script>";  
@@ -81,7 +98,7 @@ class PaymentController extends Controller
 
             // $reference = $paymentDetails['reference'];
             // $transaction =  Transaction::where('reference', $reference)->first();
-            // $transaction_user = Uer::find($transaction->user_id);
+            // $transaction_user = User::find($transaction->user_id);
             // $user_wallet = Wallet::find($transaction->wallet_id);
 
             // if($transaction->status == 'failed'){
@@ -133,10 +150,13 @@ class PaymentController extends Controller
                 // Transaction::create([
                 //     'user_id' => auth()->user()->id,
                 // ]);
+                $userId = auth()->user()->id;
+                // $getPrduct =  Product::where('user_id', $userId)->where()->first();
                 // // Insert into Transaction table
                 $amount= $paymentDetails['amount'] / 100;
                 Transaction::create([
-                    'user_id' => auth()->user()->id,
+                    'user_id' => $userId,
+                    'prod_name' => $paymentDetails['metadata']['title'],
                     'reference' => $paymentDetails['reference'],
                     'amount' => $amount,
                     'status' => $paymentDetails['status'],

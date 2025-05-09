@@ -140,3 +140,5 @@ export function AppSidebar() {
 
     composer require stevebauman/location
    
+
+    php artisan make:notification PostNotification

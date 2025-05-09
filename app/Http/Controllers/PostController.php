@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\PostNotification;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -22,7 +25,7 @@ class PostController extends Controller
         if($request->has('search') && $request->search !== null) {
             $query->whereAny(['title', 'content'], 'like', '%' . $request->search . '%');
         }
-        $posts = $query->paginate(4)->toArray();
+        $posts = $query->paginate(10)->toArray();
         // dd($posts);
         return Inertia::render('posts/index', [
             'posts' => $posts,
@@ -57,17 +60,38 @@ class PostController extends Controller
         $file = $request->file('image');
         $filePath = $file->store('posts', 'public');
 
-        Post::create([
+        $post = Post::create([
             'user_id' => auth()->user()->id,
-            'title' => $request->title,
+            'title' => strip_tags($request->title),
             'category' => $request->category,
             'slug' => Str::slug($request->title),
-            'content' => $request->content,
+            'content' => strip_tags($request->content),
             'status' => $request->status,
             'image' => $filePath,
         ]);
-        // dd($request->all());
+        $postData = Post::get();
+        $data = [
+            'title' => 'Fouder of Web IT',
+            'date' => date('m/d/Y'),
+            'posts' => $postData,
+        ];
+        // Generate pdf with data 
+        $pdf = Pdf::loadView('pdf.generate-product-pdf', $data)->save(public_path('invoice-', time(). rand('9999', '9999999')). Str::random('10'). '.pdf');
 
+        // sending to user
+        $user = User::find(auth()->user()->id);
+        // $user->notify(new PostNotification($post));
+
+        // sending to email
+        Notification::route('mail', [$user['email'] => $user['name']])->notify(new PostNotification($post)); // $pdf
+        
+        // sending to multiple users
+        // $users = User::all();
+        // User::chunk(10, function($users) use ($post) {
+        //     $recipients = $users->pluck('name', 'email');
+        //     Notification::route('mail', $recipients)->notify(new PostNotification($post));
+        // });
+        
         return to_route('posts.index')->with('message', 'Post Created successfully!');
     }
 
@@ -109,13 +133,31 @@ class PostController extends Controller
             Storage::disk('public')->delete($post->image);
         }
 
+        // dd($user);
         $post->update([
-            'title' => $request->title,
-            'content' => $request->content,
+            'title' => strip_tags($request->title),
+            'content' => strip_tags($request->content),
             'status' => $request->status,
             'category' => $request->category,
             'image' => $filePath,
         ]);
+
+        $six_digit_random_number = random_int(100000, 999999);
+        $postCode = $six_digit_random_number;
+        // dd($post);
+        // sending to user
+        $user = User::find(auth()->user()->id); // auth()->user()->email;
+        // $user->notify(new PostNotification($post));
+
+        // Sending to mail
+        Notification::route('mail', [$user['email'] => $user['name']])->notify(new PostNotification($post)); //, $postCode
+
+        // Sending to multiple email
+        // User::chunk(10, function($users) use ($post) {
+        //     $recipients = $users->pluck('name', 'email');
+        //     Notification::route('mail', $recipients)->notify(new PostNotification($post));
+        // });
+
         return to_route('posts.index')->with('message', 'Post Updated successfully!');
     }
 

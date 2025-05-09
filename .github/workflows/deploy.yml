@@ -1,0 +1,55 @@
+name: Deploy Laravel Application to Production Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: Install Composer Dependencies
+        run: composer install --optimize-autoloader --no-dev --no-progress --on-interaction --prefer-dist
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install NPM Dependencies
+        run: npm install
+
+      - name: Build NPM Assets
+        run: npm run build
+
+      - name: Synchronize Files To Server
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secret.SSH_PRIVATE_KEY }} # use to login to server
+          SOURCE: '.' # source of compile access usually refers to your root directory of your server
+          REMOTE_HOST: ${{ secret.VPS_HOST }} #  IP Address of your server
+          REMOTE_USER: ${{ secret.VPS_USER }} # Username you use to login
+          TARGET: '/var/www/html/glennraya.com' # Root of your target location on your production server
+
+      - name: Run Remote/Artisan Command
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secret.VPS_HOST }}
+          username: ${{ secret.VPS_USER }}
+          key: ${{ secret.SSH_PRIVATE_KEY }}
+          script: |
+            cd '/var/www/html/glennraya.com
+            php artisan migrate --force
+            php artisan optimize
+
+# settings -- Secrets and Variable  -- Actions

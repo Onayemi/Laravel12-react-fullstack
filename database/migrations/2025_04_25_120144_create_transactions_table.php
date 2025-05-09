@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->string('prod_name');
             $table->string('reference')->unique();
             $table->decimal('amount', 10, 2);
             // $table->enum('status', ['pending', 'success', 'failed']);
