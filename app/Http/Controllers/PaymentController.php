@@ -26,13 +26,18 @@ class PaymentController extends Controller
     public function initialize(Request $request) {
         $client = new Client();
         // dd(config('services.paystack.secret_key'));
+        // dd(config('services.flutterwave.secret_key'));
         try {
+            // $response = $client->request('POST', 'https://api.flutterwave.com/v3/payments', [
             $response = $client->request('POST', 'https://api.paystack.co/transaction/initialize', [
                 'headers' => [
+                    // 'Authorization' => 'Bearer FLWSECK_TEST-680bb5881d03c5980213208a5bfdc190-X', //config('services.flutterwave.secret_key'),
+                    // 'Authorization' => 'Bearer ' . config('services.flutterwave.secret_key'),
                     'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
                     'Content-Type'  => 'application/json',
                     'Accept'        => 'application/json',
                 ],
+                // Paystack data
                 'json' => [
                     'email'  => auth()->user()->email,
                     'amount' => $request->amount * 100, // amount in kobo
@@ -46,6 +51,19 @@ class PaymentController extends Controller
                     ],
                     'callback_url' => route('payment.callback'), // ✅ This is the callback
                 ],
+
+                //// Flutterwave data
+                // 'json' => [
+                //     'tx_ref' => mt_rand(10000000, 99999999), // Str::random(9),
+                //     'amount' => $request->amount,
+                //     'currency' =>  'NGN',
+                //     'redirect_url' => route('payment.callback'),
+                //     'customer' => array(
+                //         'email' => auth()->user()->email,
+                //         'name' => auth()->user()->name,
+                //         'phonenumber' => '09012345678',
+                //     ),
+                // ],
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
@@ -60,9 +78,12 @@ class PaymentController extends Controller
                 'description' => $request->content,
             ]);
 
+            //  Paystack redirect
             $url = $body['data']['authorization_url'];
+
+            // //  Flutterwave redirect
+            // $url = $body['data']['link'];
             if (!empty($url)) {
-                // echo "<script>window.location.href = '{$url}';</script>";  
                 return Inertia::location($url);                                                   
                 exit;
             }
@@ -77,20 +98,28 @@ class PaymentController extends Controller
     }
 
     public function callback(Request $request) {
-
+        // Paystack query
         $reference = $request->query('reference');
+        // // Flutterwave query
+        // $reference = $request->query('tx_ref');
+        // $transactionId = $request->query('transaction_id');
         // dd($reference);
+
         $client = new \GuzzleHttp\Client();
         try {
             $response = $client->request('GET', "https://api.paystack.co/transaction/verify/{$reference}", [
+            // $response = $client->request('GET', "https://api.flutterwave.com/v3/transactions/{$transactionId}/verify", [
+                // https://api.flutterwave.com/v3/transactions/123456/verify
                 'verify' => true, // disable SSL validation (for local dev)
                 'headers' => [
+                    // 'Authorization' => 'Bearer ' . config('services.flutterwave.secret_key'),
                     'Authorization' => 'Bearer ' . config('services.paystack.secret_key'),
                     'Accept'        => 'application/json',
                 ],
             ]);
-
-            $body = json_decode($response->getBody(), true);
+            // dd($response);
+            // $body = json_decode($response->getBody(), true);
+            $body = json_decode($response->getBody()->getContents(), true);
             // dd($body);
             // Get ip Address
             $ip = $request->ip();
@@ -115,6 +144,7 @@ class PaymentController extends Controller
             // return back()->with(['message' => 'Payment made successfully']);
 
             $position = Location::get($paymentDetails['ip_address']);
+            // $position = Location::get($paymentDetails['ip']);
             // dd($body, "ip", $position);
             if ($paymentDetails['status'] && $paymentDetails['status'] == 'success') {
                 // Handle successful transaction

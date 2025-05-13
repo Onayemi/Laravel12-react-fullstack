@@ -21,6 +21,13 @@ return [
         'base_url' => env('PAYSTACK_BASE_URL'),
         // 'callback_url' => env('PAYSTACK_CALLBACK_URL'),
     ],
+    
+    'flutterwave' => [
+        'secret_key' => env('FLUTTERWAVE_SECRET_KEY'),
+        'payment_url' => 'https://api.flutterwave.com/v3/payments',
+        'base_url' => env('FLUTTERWAVE_BASE_URL'),
+        // 'callback_url' => env('PAYSTACK_CALLBACK_URL'),
+    ],
 
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
