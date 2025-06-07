@@ -4,9 +4,11 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Socialite\ProviderController;
+use App\Http\Controllers\SocialiteController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
 
 
 
@@ -19,8 +21,11 @@ Route::get('/table', function () {
     return Inertia::render('table');
 })->name('table');
 
-Route::get('/auth/{provider}/redirect', [ProviderController::class, 'providerRedirect'])->name('auth.redirect');
-Route::get('/auth/{provider}/callback', [ProviderController::class, 'providerCallback'])->name('auth.callback');
+// Route::get('/auth/{provider}/redirect', [ProviderController::class, 'providerRedirect'])->name('auth.redirect');
+// Route::get('/auth/{provider}/callback', [ProviderController::class, 'providerCallback'])->name('auth.callback');
+
+Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirectToSocialite'])->name('auth.redirect');
+Route::get('/auth/{provider}/callback', [SocialiteController::class, 'handleCallback'])->name('auth.callback');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

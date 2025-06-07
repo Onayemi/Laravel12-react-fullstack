@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        //  Add verify code in User Tables
+        $verify_code = mt_rand(1000000, 9999999);
+        User::where('email', $request->email)->update([
+            'verify_code' => $verify_code
+        ]);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

@@ -1,8 +1,9 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
+import SocialiteButton from '@/components/SocialiteButton';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,36 +23,24 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<LoginForm>>({
+    const { data, setData, post, get, processing, errors, reset } = useForm<Required<LoginForm>>({
         email: '',
         password: '',
         remember: false,
     });
-
-    const githubRoute = `/auth/github/redirect`;
-    // const handleGithubLogin = async () => {
-    //     // try {
-    //     //     const response = await axios.get('auth.redirect'); // Replace with your actual API endpoint
-    //     //     console.log(response);
-    //     //     // // Assuming your API returns a JSON response with a 'redirect_url'
-    //     //     // if (response.data && response.data.redirect_url) {
-    //     //     //     window.location.href = response.data.redirect_url;
-    //     //     // } else if (typeof response.data === 'string' && response.data.startsWith('http')) {
-    //     //     //     window.location.href = response.data;
-    //     //     // } else {
-    //     //     //     console.error('Invalid redirect URL received:', response.data);
-    //     //     // }
-    //     // } catch (error) {
-    //     //     console.error('There was an error:', error);
-    //     //     // Handle the error
-    //     // }
-    // };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route('login'), {
             onFinish: () => reset('password'),
         });
+    };
+
+    const handleSocialite = ({ provider }: any) => {
+        // e.preventDefault();
+        // router.replace(route("/auth/redirect"));
+        alert('social');
+        window.location.href = route(`auth/${provider}/redirect`);
     };
 
     return (
@@ -126,19 +115,14 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
 
             <div className="text-muted-foreground space-x-2 text-center text-sm">
-                <Link href={githubRoute}>Login with Github</Link>
-                {/* <Button asChild size={'sm'} variant={'default'}>
-                    <Link href={githubRoute} prefetch>
-                        Login with Github
-                    </Link>
-                </Button> */}
-                {/* <button onClick={handleGithubLogin}>Login with Github</button> */}
-                {/* <Link href={route('auth.redirect', 'github')} tabIndex={6}>
+                {/* <Button onClick={handleSocialite} type="submit" className="mt-4 w-full" tabIndex={5}>
                     Login with Github
-                </Link>
-                <Link href={route('auth.redirect', 'google')} tabIndex={7}>
+                </Button> */}
+                <SocialiteButton provider={'github'} />
+                <SocialiteButton provider={'google'} />
+                {/* <TextLink href={route('auth.redirect')} tabIndex={5}>
                     Login with Google
-                </Link> */}
+                </TextLink> */}
             </div>
         </AuthLayout>
     );
